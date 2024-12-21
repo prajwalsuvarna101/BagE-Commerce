@@ -17,7 +17,8 @@ namespace Bag_E_Commerce.Helper
             {
                 new Claim(ClaimTypes.Name, user.username),
                 new Claim(ClaimTypes.Role, user.role.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
+                new Claim(ClaimTypes.Role, user.role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
