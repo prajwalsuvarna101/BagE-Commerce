@@ -19,5 +19,19 @@ namespace Bag_E_Commerce.Models
 
         [Required]
         public int quantity { get; set; }
+
+        // Foreign key to CategoryModel
+        [Required]
+        public int CategoryId { get; set; }
+
+        // Navigation property to CategoryModel
+        public CategoryModel? category { get; set; }
+
+        // Foreign key to VendorModel
+        [Required]
+        public int VendorId { get; set; }
+
+        // Navigation property to VendorModel
+        public VendorModel? vendor { get; set; }
     }
 }

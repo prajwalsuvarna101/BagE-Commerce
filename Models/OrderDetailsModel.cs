@@ -2,7 +2,7 @@
 
 namespace Bag_E_Commerce.Models
 {
-    public class OrderDetailModel
+    public class OrderDetailsModel
     {
         [Required]
         public int OrderId { get; set; }
