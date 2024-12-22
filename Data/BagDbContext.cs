@@ -1,7 +1,7 @@
 ﻿using Bag_E_Commerce.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bag_E_Commerce
+namespace Bag_E_Commerce.Data
 {
     public class BagDbContext : DbContext
     {
@@ -49,66 +49,66 @@ namespace Bag_E_Commerce
             modelBuilder.Entity<BagModel>()
                 .HasOne<VendorModel>()
                 .WithMany()
-                .HasForeignKey(b => b.vendor_id)
+                .HasForeignKey(b => b.VendorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Configure ReviewModel relationships
             modelBuilder.Entity<ReviewModel>()
                 .HasOne<BagModel>()
                 .WithMany()
-                .HasForeignKey(r => r.product_id)
+                .HasForeignKey(r => r.BagId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ReviewModel>()
                 .HasOne<UserModel>()
                 .WithMany()
-                .HasForeignKey(r => r.user_id)
+                .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Configure OrderDetailsModel relationships
             modelBuilder.Entity<OrderDetailsModel>()
-                .HasKey(od => new { od.order_id, od.product_id });
+                .HasKey(od => new { od.OrderId, od.BagId });
 
             modelBuilder.Entity<OrderDetailsModel>()
                 .HasOne<OrderModel>()
                 .WithMany()
-                .HasForeignKey(od => od.order_id)
+                .HasForeignKey(od => od.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<OrderDetailsModel>()
                 .HasOne<BagModel>()
                 .WithMany()
-                .HasForeignKey(od => od.product_id)
+                .HasForeignKey(od => od.BagId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Configure ShoppingCartModel relationships
             modelBuilder.Entity<ShoppingCartModel>()
-                .HasKey(sc => new { sc.cart_id, sc.product_id });
+                .HasKey(sc => new { sc.CartId, sc.BagId });
 
             modelBuilder.Entity<ShoppingCartModel>()
                 .HasOne<UserModel>()
                 .WithMany()
-                .HasForeignKey(sc => sc.cart_id)
+                .HasForeignKey(sc => sc.CartId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ShoppingCartModel>()
                 .HasOne<BagModel>()
                 .WithMany()
-                .HasForeignKey(sc => sc.product_id)
+                .HasForeignKey(sc => sc.BagId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Configure PaymentModel relationships
             modelBuilder.Entity<PaymentModel>()
                 .HasOne<OrderModel>()
                 .WithMany()
-                .HasForeignKey(p => p.order_id)
+                .HasForeignKey(p => p.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Configure ShippingModel relationships
             modelBuilder.Entity<ShippingModel>()
                 .HasOne<OrderModel>()
                 .WithMany()
-                .HasForeignKey(s => s.order_id)
+                .HasForeignKey(s => s.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
