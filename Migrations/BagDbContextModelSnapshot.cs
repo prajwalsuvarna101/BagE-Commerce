@@ -22,32 +22,60 @@ namespace Bag_E_Commerce.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Bag_E_Commerce.Models.BagModel", b =>
+            modelBuilder.Entity("BagModel", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("description")
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<decimal>("price")
+                    b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("quantity")
+                    b.Property<int>("VendorId")
                         .HasColumnType("integer");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("VendorId");
 
                     b.ToTable("bags", (string)null);
+                });
+
+            modelBuilder.Entity("Bag_E_Commerce.Models.CategoryModel", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryId"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("categories", (string)null);
                 });
 
             modelBuilder.Entity("Bag_E_Commerce.Models.UserModel", b =>
@@ -85,7 +113,49 @@ namespace Bag_E_Commerce.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("email")
+                        .IsUnique();
+
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("Bag_E_Commerce.Models.VendorModel", b =>
+                {
+                    b.Property<int>("VendorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VendorId"));
+
+                    b.Property<string>("ContactDetails")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("VendorId");
+
+                    b.ToTable("vendors", (string)null);
+                });
+
+            modelBuilder.Entity("BagModel", b =>
+                {
+                    b.HasOne("Bag_E_Commerce.Models.CategoryModel", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Bag_E_Commerce.Models.VendorModel", null)
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

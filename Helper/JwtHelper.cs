@@ -10,7 +10,7 @@ namespace Bag_E_Commerce.Helper
     public static class JwtHelper
     {
         private static string SecretKey = "welcometoegdkmanglorewelcometoegdkmanglorewelcometoegdkmanglore"; // Use a more secure key in production
-
+        string role = user.role == UserRole.Admin ? "Admin" : "User";
         public static string GenerateJwtToken(UserModel user)
         {
             var claims = new[]
