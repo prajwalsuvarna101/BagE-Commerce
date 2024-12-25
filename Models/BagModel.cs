@@ -1,37 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bag_E_Commerce.Models
+public class BagModel
 {
-    public class BagModel
-    {
-        [Key]
-        public int id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string? name { get; set; }
+    [Required]
+    [MaxLength(100)]
+    public string? Name { get; set; }
 
-        [Required]
-        public string? description { get; set; }
+    [Required]
+    public string? Description { get; set; }
 
-        [Required]
-        public decimal price { get; set; }
+    [Required]
+    public decimal Price { get; set; }
 
-        [Required]
-        public int quantity { get; set; }
+    [Required]
+    public int CategoryId { get; set; } // Foreign key for Category
 
-        // Foreign key to CategoryModel
-        [Required]
-        public int CategoryId { get; set; }
-
-        // Navigation property to CategoryModel
-        public CategoryModel? category { get; set; }
-
-        // Foreign key to VendorModel
-        [Required]
-        public int VendorId { get; set; }
-
-        // Navigation property to VendorModel
-        public VendorModel? vendor { get; set; }
-    }
+    [Required]
+    public int VendorId { get; set; } // Foreign key for Vendor
 }

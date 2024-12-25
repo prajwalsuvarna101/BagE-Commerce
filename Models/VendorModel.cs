@@ -14,5 +14,8 @@ namespace Bag_E_Commerce.Models
         public string? ContactDetails { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+
+        
     }
 }

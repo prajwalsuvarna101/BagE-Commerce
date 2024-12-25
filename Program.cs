@@ -6,6 +6,8 @@ using System.Text;
 using Bag_E_Commerce.Data;
 using Bag_E_Commerce.Services;
 using Microsoft.AspNetCore.Builder;
+using Bag_E_Commerce.Services.Interfaces;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +18,26 @@ builder.Services.AddDbContext<BagDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register controllers
+
+var serviceInterfaceType = typeof(ICategoryService);  // Adjust this to the base type of your services
+var serviceTypes = Assembly.GetExecutingAssembly().GetTypes()
+    .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces().Contains(serviceInterfaceType));
+
+foreach (var serviceType in serviceTypes)
+{
+    var interfaceType = serviceType.GetInterfaces().First();
+    builder.Services.AddScoped(interfaceType, serviceType);
+}
+
+
 builder.Services.AddControllers();
 
 // Register other services
 builder.Services.AddScoped<AuthService>();  // Register AuthService for authentication
+builder.Services.AddScoped<IBagService, BagService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IVendorService, VendorService>();
+
 
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();

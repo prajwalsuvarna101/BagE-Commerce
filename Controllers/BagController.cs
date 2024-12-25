@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Bag_E_Commerce.Models;
+using Bag_E_Commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Bag_E_Commerce.Data;
-using Bag_E_Commerce.Models;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -10,148 +11,73 @@ namespace Bag_E_Commerce.Controllers
     [ApiController]
     public class BagController : ControllerBase
     {
-        private readonly BagDbContext _context;
+        private readonly IBagService _bagService;
 
-        public BagController(BagDbContext context)
+        public BagController(IBagService bagService)
         {
-            _context = context;
+            _bagService = bagService;
         }
 
         // GET: api/Bag
-        [Authorize(Roles = "Admin,User")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BagModel>>> GetBags()
+        public async Task<ActionResult<IEnumerable<object>>> GetBags()
         {
-            if (!User.Identity.IsAuthenticated)
+            var bags = await _bagService.GetAllBagsAsync();
+
+            if (bags == null || !bags.Any())
             {
-                return Unauthorized(new { message = "You must be authenticated to access the bags." });
+                return NotFound(new { message = "No bags found." });
             }
 
-            if (!User.IsInRole("Admin") && !User.IsInRole("User"))
-            {
-                return Unauthorized(new { message = "You do not have the required role to access this resource." });
-            }
-
-            return await _context.Bags.ToListAsync();
+            return Ok(bags); // Return the bags with populated Category and Vendor data
         }
 
         // GET: api/Bag/5
-        [Authorize(Roles = "Admin,User")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<BagModel>> GetBag(int id)
+        public async Task<ActionResult<object>> GetBag(int id)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { message = "You must be authenticated to access this bag." });
-            }
-
-            if (!User.IsInRole("Admin") && !User.IsInRole("User"))
-            {
-                return Unauthorized(new { message = "You do not have the required role to access this resource." });
-            }
-
-            var bag = await _context.Bags.FindAsync(id);
+            var bag = await _bagService.GetBagByIdAsync(id);
 
             if (bag == null)
             {
                 return NotFound(new { message = "Bag not found." });
             }
 
-            return bag;
+            return Ok(bag); // Return the single bag with populated Category and Vendor data
         }
 
         // POST: api/Bag
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<BagModel>> PostBag(BagModel bag)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { message = "You must be authenticated to add a new bag." });
-            }
-
-            if (!User.IsInRole("Admin"))
-            {
-                return Unauthorized(new { message = "Only Admins can add new bags." });
-            }
-
-            _context.Bags.Add(bag);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBag", new { id = bag.id }, bag);
+            var createdBag = await _bagService.CreateBagAsync(bag);
+            return CreatedAtAction(nameof(GetBag), new { id = createdBag.Id }, createdBag);
         }
 
         // PUT: api/Bag/5
-        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBag(int id, BagModel bag)
         {
-            if (!User.Identity.IsAuthenticated)
+            var updatedBag = await _bagService.UpdateBagAsync(id, bag);
+            if (updatedBag == null)
             {
-                return Unauthorized(new { message = "You must be authenticated to update a bag." });
-            }
-
-            if (!User.IsInRole("Admin"))
-            {
-                return Unauthorized(new { message = "Only Admins can update bags." });
-            }
-
-            if (id != bag.id)
-            {
-                return BadRequest(new { message = "Bag ID mismatch." });
-            }
-
-            _context.Entry(bag).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BagExists(id))
-                {
-                    return NotFound(new { message = "Bag not found." });
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(new { message = "Bag not found." });
             }
 
             return NoContent();
         }
 
         // DELETE: api/Bag/5
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBag(int id)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { message = "You must be authenticated to delete a bag." });
-            }
-
-            if (!User.IsInRole("Admin"))
-            {
-                return Unauthorized(new { message = "Only Admins can delete bags." });
-            }
-
-            var bag = await _context.Bags.FindAsync(id);
-            if (bag == null)
+            var result = await _bagService.DeleteBagAsync(id);
+            if (!result)
             {
                 return NotFound(new { message = "Bag not found." });
             }
 
-            _context.Bags.Remove(bag);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool BagExists(int id)
-        {
-            return _context.Bags.Any(e => e.id == id);
         }
     }
 }

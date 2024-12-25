@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Bag_E_Commerce.Data;
-using Bag_E_Commerce.Models; 
+using Bag_E_Commerce.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -16,14 +18,14 @@ namespace Bag_E_Commerce.Controllers
             _context = context;
         }
 
-        
+        // GET: api/User
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserModel>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
         }
 
-        
+        // GET: api/User/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserModel>> GetUser(int id)
         {
@@ -37,9 +39,19 @@ namespace Bag_E_Commerce.Controllers
             return user;
         }
 
+        // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<UserModel>> PostUser(UserModel user)
+        public async Task<ActionResult<UserModel>> PostUser([FromForm] string name, [FromForm] string email, [FromForm] string username, [FromForm] string password, [FromForm] int role)
         {
+            var user = new UserModel
+            {
+                name = name,
+                email = email,
+                username = username,
+                password_hash = HashPassword(password), // Hash the password before saving it
+                role = (Enums.UserRole)role
+            };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -48,11 +60,21 @@ namespace Bag_E_Commerce.Controllers
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UserModel user)
+        public async Task<IActionResult> PutUser(int id, [FromForm] string name, [FromForm] string email, [FromForm] string username, [FromForm] string password)
         {
-            if (id != user.id)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
             {
-                return BadRequest();
+                return NotFound();
+            }
+
+            user.name = name;
+            user.email = email;
+            user.username = username;
+
+            if (!string.IsNullOrEmpty(password))
+            {
+                user.password_hash = HashPassword(password); // Hash the password if it's being updated
             }
 
             _context.Entry(user).State = EntityState.Modified;
@@ -76,7 +98,7 @@ namespace Bag_E_Commerce.Controllers
             return NoContent();
         }
 
-        
+        // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -95,6 +117,17 @@ namespace Bag_E_Commerce.Controllers
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.id == id);
+        }
+
+        // Method to hash the password using SHA-256
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                byte[] hashBytes = sha256.ComputeHash(passwordBytes);
+                return Convert.ToBase64String(hashBytes); // Return the Base64-encoded hash
+            }
         }
     }
 }

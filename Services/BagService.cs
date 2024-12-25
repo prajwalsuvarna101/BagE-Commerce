@@ -2,6 +2,9 @@
 using Bag_E_Commerce.Models;
 using Bag_E_Commerce.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Bag_E_Commerce.Services
 {
@@ -14,16 +17,78 @@ namespace Bag_E_Commerce.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<BagModel>> GetAllBagsAsync()
+        // Get all bags with related Category and Vendor information
+        public async Task<IEnumerable<object>> GetAllBagsAsync()
         {
-            return await _context.Bags.ToListAsync();
+            var bags = await _context.Bags.ToListAsync();
+            var result = new List<object>();
+
+            foreach (var bag in bags)
+            {
+                var category = await _context.Categories.FindAsync(bag.CategoryId);
+                var vendor = await _context.Vendors.FindAsync(bag.VendorId);
+
+                var bagWithDetails = new
+                {
+                    bag.Id,
+                    bag.Name,
+                    bag.Description,
+                    bag.Price,
+                    Category = new
+                    {
+                        category?.CategoryId,
+                        category?.Name,
+                        category?.Description
+                    },
+                    Vendor = new
+                    {
+                        vendor?.VendorId,
+                        vendor?.Name,
+                        vendor?.ContactDetails,
+                        vendor?.CreatedAt
+                    }
+                };
+
+                result.Add(bagWithDetails);
+            }
+
+            return result;
         }
 
-        public async Task<BagModel?> GetBagByIdAsync(int id)
+        // Get a single bag by id with related Category and Vendor information
+        public async Task<object?> GetBagByIdAsync(int id)
         {
-            return await _context.Bags.FindAsync(id);
+            var bag = await _context.Bags.FindAsync(id);
+            if (bag == null) return null;
+
+            var category = await _context.Categories.FindAsync(bag.CategoryId);
+            var vendor = await _context.Vendors.FindAsync(bag.VendorId);
+
+            var result = new
+            {
+                bag.Id,
+                bag.Name,
+                bag.Description,
+                bag.Price,
+                Category = new
+                {
+                    category?.CategoryId,
+                    category?.Name,
+                    category?.Description
+                },
+                Vendor = new
+                {
+                    vendor?.VendorId,
+                    vendor?.Name,
+                    vendor?.ContactDetails,
+                    vendor?.CreatedAt
+                }
+            };
+
+            return result;
         }
 
+        // Create a new bag
         public async Task<BagModel> CreateBagAsync(BagModel bag)
         {
             _context.Bags.Add(bag);
@@ -31,20 +96,23 @@ namespace Bag_E_Commerce.Services
             return bag;
         }
 
+        // Update an existing bag
         public async Task<BagModel> UpdateBagAsync(int id, BagModel bag)
         {
             var existingBag = await _context.Bags.FindAsync(id);
             if (existingBag == null) throw new KeyNotFoundException("Bag not found.");
 
-            existingBag.name = bag.name;
-            existingBag.description = bag.description;
-            existingBag.price = bag.price;
-            existingBag.quantity = bag.quantity;
+            existingBag.Name = bag.Name;
+            existingBag.Description = bag.Description;
+            existingBag.Price = bag.Price;
+            existingBag.CategoryId = bag.CategoryId;
+            existingBag.VendorId = bag.VendorId;
 
             await _context.SaveChangesAsync();
             return existingBag;
         }
 
+        // Delete a bag
         public async Task<bool> DeleteBagAsync(int id)
         {
             var bag = await _context.Bags.FindAsync(id);

@@ -12,5 +12,8 @@ namespace Bag_E_Commerce.Models
         public string Name { get; set; }
 
         public string? Description { get; set; }
+
+        // Navigation property for related bags
+       
     }
 }

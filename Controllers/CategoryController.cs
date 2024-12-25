@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Bag_E_Commerce.Models;
 using Bag_E_Commerce.Services.Interfaces;
+using Bag_E_Commerce.Services;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -50,7 +51,7 @@ namespace Bag_E_Commerce.Controllers
                 return BadRequest(ModelState);
 
             var updated = await _categoryService.UpdateCategoryAsync(id, category);
-            if (!updated)
+            if (updated!=null)
                 return NotFound("Category not found.");
 
             return NoContent();
