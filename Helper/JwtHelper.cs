@@ -4,24 +4,27 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Bag_E_Commerce.Models;
+using Bag_E_Commerce.Enums;
 
 namespace Bag_E_Commerce.Helper
 {
     public static class JwtHelper
     {
         private static string SecretKey = "welcometoegdkmanglorewelcometoegdkmanglorewelcometoegdkmanglore"; // Use a more secure key in production
-        string role = user.role == UserRole.Admin ? "Admin" : "User";
+
         public static string GenerateJwtToken(UserModel user)
         {
+            // Determine the role based on the UserModel's role
+            var role = user.role == UserRole.Admin ? "Admin" : "User";
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.username),
-                new Claim(ClaimTypes.Role, user.role.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
+                new Claim(ClaimTypes.Role, role),  // Assign the role claim
+                new Claim(ClaimTypes.NameIdentifier, user.id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
-
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

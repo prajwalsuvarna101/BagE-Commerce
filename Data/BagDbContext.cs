@@ -11,7 +11,8 @@ namespace Bag_E_Commerce.Data
         public DbSet<BagModel> Bags { get; set; }
         public DbSet<CategoryModel> Categories { get; set; }
         public DbSet<VendorModel> Vendors { get; set; }
-       
+        public DbSet<ReviewModel> Reviews { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

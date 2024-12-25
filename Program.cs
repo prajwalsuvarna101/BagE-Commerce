@@ -37,6 +37,7 @@ builder.Services.AddScoped<AuthService>();  // Register AuthService for authenti
 builder.Services.AddScoped<IBagService, BagService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IVendorService, VendorService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 
 // Add Swagger for API documentation
