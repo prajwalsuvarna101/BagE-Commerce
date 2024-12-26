@@ -12,6 +12,7 @@ namespace Bag_E_Commerce.Data
         public DbSet<CategoryModel> Categories { get; set; }
         public DbSet<VendorModel> Vendors { get; set; }
         public DbSet<ReviewModel> Reviews { get; set; }
+        public DbSet<ShoppingCartModel> Carts { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,6 +41,21 @@ namespace Bag_E_Commerce.Data
                 .WithMany()
                 .HasForeignKey(b => b.VendorId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ShoppingCartModel>()
+            .HasKey(cart => new { cart.CartId, cart.ProductId });
+
+            modelBuilder.Entity<ShoppingCartModel>()
+                .HasOne<BagModel>()
+                .WithMany()
+                .HasForeignKey(cart => cart.ProductId)  // Foreign Key for ProductId
+                .OnDelete(DeleteBehavior.Restrict); // Optional: Handle delete behavior
+
+            modelBuilder.Entity<ShoppingCartModel>()
+                .HasOne<UserModel>()
+                .WithMany()
+                .HasForeignKey(cart => cart.UserId)  // Foreign Key for UserId
+                .OnDelete(DeleteBehavior.Cascade); // Optional: Handle delete behavior
 
 
             base.OnModelCreating(modelBuilder);

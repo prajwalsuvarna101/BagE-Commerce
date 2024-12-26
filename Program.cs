@@ -32,12 +32,12 @@ foreach (var serviceType in serviceTypes)
 
 builder.Services.AddControllers();
 
-// Register other services
-builder.Services.AddScoped<AuthService>();  // Register AuthService for authentication
+// Register  Services
+builder.Services.AddScoped<AuthService>();  
 builder.Services.AddScoped<IBagService, BagService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IVendorService, VendorService>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IShoppingCartService,ShoppingCartService>();
 
 
 // Add Swagger for API documentation

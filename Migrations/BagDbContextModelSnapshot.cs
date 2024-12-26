@@ -106,6 +106,32 @@ namespace Bag_E_Commerce.Migrations
                     b.ToTable("Reviews");
                 });
 
+            modelBuilder.Entity("Bag_E_Commerce.Models.ShoppingCartModel", b =>
+                {
+                    b.Property<int>("CartId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("PricePerItem")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CartId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Carts");
+                });
+
             modelBuilder.Entity("Bag_E_Commerce.Models.UserModel", b =>
                 {
                     b.Property<int>("id")
@@ -182,6 +208,21 @@ namespace Bag_E_Commerce.Migrations
                     b.HasOne("Bag_E_Commerce.Models.VendorModel", null)
                         .WithMany()
                         .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Bag_E_Commerce.Models.ShoppingCartModel", b =>
+                {
+                    b.HasOne("BagModel", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bag_E_Commerce.Models.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
