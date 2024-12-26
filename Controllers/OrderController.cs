@@ -83,5 +83,19 @@ namespace Bag_E_Commerce.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("checkout")]
+        public async Task<IActionResult> Checkout(int cartId)
+        {
+            try
+            {
+                var orderId = await _orderService.CheckoutAsync(cartId);
+                return Ok(new { OrderId = orderId, Message = "Checkout successful!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
     }
 }

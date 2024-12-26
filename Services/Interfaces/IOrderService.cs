@@ -12,5 +12,7 @@ namespace Bag_E_Commerce.Services.Interfaces
         Task<OrderModel> CreateOrderAsync(OrderModel order);
         Task<OrderModel> UpdateOrderAsync(OrderModel order);
         Task<bool> DeleteOrderAsync(int orderId);
+
+        Task<int> CheckoutAsync(int cartId);
     }
 }

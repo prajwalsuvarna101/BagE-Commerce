@@ -8,7 +8,7 @@ namespace Bag_E_Commerce.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin,User")]
+    //[Authorize(Roles = "Admin,User")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;

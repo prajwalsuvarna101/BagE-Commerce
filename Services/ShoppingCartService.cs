@@ -27,11 +27,11 @@ namespace Bag_E_Commerce.Services
         public async Task<ShoppingCartModel> AddToCartAsync(ShoppingCartModel shoppingCart)
         {
             var existingCartItem = await _context.Carts
-                .FirstOrDefaultAsync(cart => cart.UserId == shoppingCart.UserId && cart.ProductId == shoppingCart.ProductId);
+                .FirstOrDefaultAsync(cart => cart.CartId == shoppingCart.CartId && cart.ProductId == shoppingCart.ProductId);
 
             if (existingCartItem != null)
             {
-                existingCartItem.Quantity += shoppingCart.Quantity;
+                existingCartItem.Quantity = shoppingCart.Quantity;
                 existingCartItem.PricePerItem = shoppingCart.PricePerItem;
                 _context.Carts.Update(existingCartItem);
             }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bag_E_Commerce.Enums;
 
 namespace Bag_E_Commerce.Services
 {
@@ -79,6 +80,54 @@ namespace Bag_E_Commerce.Services
             }
 
             return false;
+        }
+
+        public async Task<int> CheckoutAsync(int cartId)
+        {
+            // Get cart items
+            var cartItems = await _context.Carts.Where(c => c.CartId == cartId).ToListAsync();
+            if (!cartItems.Any())
+                throw new Exception("Cart is empty!");
+
+            // Calculate total amount
+            var totalAmount = cartItems.Sum(item => item.Quantity * item.PricePerItem);
+
+            // Get UserId from the first cart item (assuming all belong to the same user)
+            var userId = cartItems.First().UserId;
+
+            // Create a new order
+            var order = new OrderModel
+            {
+                UserId = userId,
+                TotalAmount = totalAmount,
+                OrderStatus = OrderStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            // Transfer items to OrderDetails
+            foreach (var item in cartItems)
+            {
+                var orderDetail = new OrderDetailsModel
+                {
+
+                    OrderItemId = (int)(DateTime.UtcNow.Ticks % int.MaxValue),
+                    OrderId = order.OrderId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.PricePerItem
+                };
+                _context.OrderDetails.Add(orderDetail);
+            }
+
+            // Remove items from cart
+            _context.Carts.RemoveRange(cartItems);
+
+            // Save changes
+            await _context.SaveChangesAsync();
+
+            return order.OrderId; // Return the newly created order ID
         }
     }
 }

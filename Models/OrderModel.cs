@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Bag_E_Commerce.Enums;
 
 namespace Bag_E_Commerce.Models
 {
@@ -13,7 +14,9 @@ namespace Bag_E_Commerce.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
-        public string OrderStatus { get; set; }  // 'Pending', 'Completed', or 'Cancelled'
+        [Required]
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending; // Default to Pending
+
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Default to current UTC time
     }

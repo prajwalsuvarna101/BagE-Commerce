@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Bag_E_Commerce.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Bag_E_Commerce.Data
 {
@@ -14,6 +15,7 @@ namespace Bag_E_Commerce.Data
         public DbSet<ReviewModel> Reviews { get; set; }
         public DbSet<ShoppingCartModel> Carts { get; set; }
         public DbSet<OrderModel> Orders { get; set; }
+        public DbSet<OrderDetailsModel> OrderDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,7 +48,9 @@ namespace Bag_E_Commerce.Data
 
             // Configure ShoppingCartModel with composite key
             modelBuilder.Entity<ShoppingCartModel>()
-                .HasKey(cart => new { cart.CartId, cart.ProductId });
+            .HasKey(cart => new { cart.CartId, cart.ProductId });
+
+            
 
             modelBuilder.Entity<ShoppingCartModel>()
                 .HasOne<BagModel>()
@@ -69,6 +73,29 @@ namespace Bag_E_Commerce.Data
                 .WithMany()  // No navigation property in UserModel
                 .HasForeignKey(order => order.UserId)  // Foreign key pointing to UserId in Users table
                 .OnDelete(DeleteBehavior.Cascade);  // Cascade delete for UserId
+
+            //ORDER DETAILS
+
+            modelBuilder.Entity<OrderDetailsModel>()
+                .HasKey(od => new { od.OrderItemId, od.ProductId });
+
+            // Foreign key relationships
+            modelBuilder.Entity<OrderDetailsModel>()
+                .HasOne<OrderModel>()
+                .WithMany()
+                .HasForeignKey(od => od.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderDetailsModel>()
+                .HasOne<BagModel>()
+                .WithMany()
+                .HasForeignKey(od => od.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderModel>()
+                .Property(order => order.OrderStatus)
+                .HasConversion<int>(); // Stores enum as integer in the database
+
 
             base.OnModelCreating(modelBuilder);
         }
