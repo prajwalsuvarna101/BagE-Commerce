@@ -1,4 +1,5 @@
 ﻿using Bag_E_Commerce.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,5 +15,6 @@ namespace Bag_E_Commerce.Services.Interfaces
         Task<bool> DeleteOrderAsync(int orderId);
 
         Task<int> CheckoutAsync(int cartId);
+        Task<PaymentModel> CompletePayment(int orderId, PaymentMethod paymentMethod);
     }
 }

@@ -129,5 +129,33 @@ namespace Bag_E_Commerce.Services
 
             return order.OrderId; // Return the newly created order ID
         }
+
+        public async Task<PaymentModel> CompletePayment(int orderId, PaymentMethod paymentMethod)
+        {
+            // Fetch the order
+            var order = _context.Orders.FirstOrDefault(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                throw new Exception($"Order with ID {orderId} not found.");
+            }
+
+            // Default payment status is set to Success
+            var paymentStatus = PaymentStatus.Success;
+
+            // Create a new payment entry
+            var payment = new PaymentModel
+            {
+                OrderId = orderId,
+                PaymentMethod = paymentMethod,
+                PaymentStatus = paymentStatus,
+                PaymentDate = DateTime.UtcNow
+            };
+
+            _context.Payment.Add(payment);
+            await _context.SaveChangesAsync();
+
+            return payment;
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace Bag_E_Commerce.Data
         public DbSet<ShoppingCartModel> Carts { get; set; }
         public DbSet<OrderModel> Orders { get; set; }
         public DbSet<OrderDetailsModel> OrderDetails { get; set; }
+        public DbSet<PaymentModel> Payment { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

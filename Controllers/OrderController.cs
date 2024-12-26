@@ -97,5 +97,28 @@ namespace Bag_E_Commerce.Controllers
                 return BadRequest(new { Message = ex.Message });
             }
         }
-    }
+
+        [HttpPost("{orderId}/complete-payment")]
+        public async Task<IActionResult> CompletePayment(int orderId, [FromBody] PaymentRequest request)
+        {
+            try
+            {
+                // Call the service to complete the payment
+                var payment = await _orderService.CompletePayment(orderId, request.PaymentMethod);
+
+                // Return the payment object in the response
+                return Ok(new
+                {
+                    Message = "Payment completed successfully.",
+                    Payment = payment
+                });
+            }
+            catch (Exception ex)
+            {
+                // Return a BadRequest response with the error message
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+}
 }

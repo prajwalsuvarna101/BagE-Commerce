@@ -131,6 +131,31 @@ namespace Bag_E_Commerce.Migrations
                     b.ToTable("orders", (string)null);
                 });
 
+            modelBuilder.Entity("Bag_E_Commerce.Models.PaymentModel", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentId"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PaymentId");
+
+                    b.ToTable("Payment");
+                });
+
             modelBuilder.Entity("Bag_E_Commerce.Models.ReviewModel", b =>
                 {
                     b.Property<int>("ReviewId")
