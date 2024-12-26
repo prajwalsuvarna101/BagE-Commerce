@@ -36,8 +36,10 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<AuthService>();  
 builder.Services.AddScoped<IBagService, BagService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IVendorService, VendorService>();
 builder.Services.AddScoped<IShoppingCartService,ShoppingCartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 
 // Add Swagger for API documentation

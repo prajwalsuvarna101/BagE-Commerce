@@ -1,5 +1,5 @@
-﻿using Bag_E_Commerce.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Bag_E_Commerce.Models;
 
 namespace Bag_E_Commerce.Data
 {
@@ -13,7 +13,7 @@ namespace Bag_E_Commerce.Data
         public DbSet<VendorModel> Vendors { get; set; }
         public DbSet<ReviewModel> Reviews { get; set; }
         public DbSet<ShoppingCartModel> Carts { get; set; }
-
+        public DbSet<OrderModel> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,9 @@ namespace Bag_E_Commerce.Data
             modelBuilder.Entity<BagModel>().ToTable("bags");
             modelBuilder.Entity<CategoryModel>().ToTable("categories");
             modelBuilder.Entity<VendorModel>().ToTable("vendors");
-            
+            modelBuilder.Entity<ReviewModel>().ToTable("reviews");
+            modelBuilder.Entity<ShoppingCartModel>().ToTable("shopping_carts");
+            modelBuilder.Entity<OrderModel>().ToTable("orders");
 
             // Configure UserModel
             modelBuilder.Entity<UserModel>()
@@ -42,21 +44,31 @@ namespace Bag_E_Commerce.Data
                 .HasForeignKey(b => b.VendorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Configure ShoppingCartModel with composite key
             modelBuilder.Entity<ShoppingCartModel>()
-            .HasKey(cart => new { cart.CartId, cart.ProductId });
+                .HasKey(cart => new { cart.CartId, cart.ProductId });
 
             modelBuilder.Entity<ShoppingCartModel>()
                 .HasOne<BagModel>()
                 .WithMany()
-                .HasForeignKey(cart => cart.ProductId)  // Foreign Key for ProductId
-                .OnDelete(DeleteBehavior.Restrict); // Optional: Handle delete behavior
+                .HasForeignKey(cart => cart.ProductId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete for ProductId
 
             modelBuilder.Entity<ShoppingCartModel>()
                 .HasOne<UserModel>()
                 .WithMany()
-                .HasForeignKey(cart => cart.UserId)  // Foreign Key for UserId
-                .OnDelete(DeleteBehavior.Cascade); // Optional: Handle delete behavior
+                .HasForeignKey(cart => cart.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for UserId
 
+            // Configure OrderModel relationships without navigation properties
+            modelBuilder.Entity<OrderModel>()
+                .HasKey(order => order.OrderId);
+
+            modelBuilder.Entity<OrderModel>()
+                .HasOne<UserModel>()
+                .WithMany()  // No navigation property in UserModel
+                .HasForeignKey(order => order.UserId)  // Foreign key pointing to UserId in Users table
+                .OnDelete(DeleteBehavior.Cascade);  // Cascade delete for UserId
 
             base.OnModelCreating(modelBuilder);
         }

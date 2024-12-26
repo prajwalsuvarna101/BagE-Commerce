@@ -78,6 +78,34 @@ namespace Bag_E_Commerce.Migrations
                     b.ToTable("categories", (string)null);
                 });
 
+            modelBuilder.Entity("Bag_E_Commerce.Models.OrderModel", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OrderId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("orders", (string)null);
+                });
+
             modelBuilder.Entity("Bag_E_Commerce.Models.ReviewModel", b =>
                 {
                     b.Property<int>("ReviewId")
@@ -103,7 +131,7 @@ namespace Bag_E_Commerce.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("reviews", (string)null);
                 });
 
             modelBuilder.Entity("Bag_E_Commerce.Models.ShoppingCartModel", b =>
@@ -129,7 +157,7 @@ namespace Bag_E_Commerce.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("shopping_carts", (string)null);
                 });
 
             modelBuilder.Entity("Bag_E_Commerce.Models.UserModel", b =>
@@ -208,6 +236,15 @@ namespace Bag_E_Commerce.Migrations
                     b.HasOne("Bag_E_Commerce.Models.VendorModel", null)
                         .WithMany()
                         .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Bag_E_Commerce.Models.OrderModel", b =>
+                {
+                    b.HasOne("Bag_E_Commerce.Models.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
