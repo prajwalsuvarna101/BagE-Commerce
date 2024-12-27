@@ -41,6 +41,7 @@ builder.Services.AddScoped<IVendorService, VendorService>();
 builder.Services.AddScoped<IShoppingCartService,ShoppingCartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IShippingService,ShippingService>();
 
 
 // Add Swagger for API documentation

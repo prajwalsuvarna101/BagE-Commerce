@@ -11,10 +11,12 @@ namespace Bag_E_Commerce.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IShippingService _shippingService;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService,IShippingService shippingService)
         {
             _orderService = orderService;
+            _shippingService = shippingService;
         }
 
         // Get all orders
@@ -106,11 +108,22 @@ namespace Bag_E_Commerce.Controllers
                 // Call the service to complete the payment
                 var payment = await _orderService.CompletePayment(orderId, request.PaymentMethod);
 
+                var shipping = new ShippingModel
+                {
+                    OrderId = orderId,
+                    ShippingAddress = request.ShippingAddress,  // Assuming this is part of the payment request
+                    ShippingStatus = ShippingStatus.Pending
+                };
+
+                // Create the shipping record
+                var createdShipping = await _shippingService.CreateShippingAsync(shipping);
+
                 // Return the payment object in the response
                 return Ok(new
                 {
-                    Message = "Payment completed successfully.",
-                    Payment = payment
+                    Message = "Payment completed successfully.Ready to be shipped",
+                    Payment = payment,
+                    Shipping = createdShipping
                 });
             }
             catch (Exception ex)

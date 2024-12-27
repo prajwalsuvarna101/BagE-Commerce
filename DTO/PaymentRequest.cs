@@ -3,4 +3,5 @@
 public class PaymentRequest
 {
     public PaymentMethod PaymentMethod { get; set; }
+    public string ShippingAddress {get;set;}
 }
