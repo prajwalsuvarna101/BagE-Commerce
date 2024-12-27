@@ -1,9 +1,8 @@
 ﻿using Bag_E_Commerce.Models;
 using Bag_E_Commerce.Services;
-using Bag_E_Commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -20,6 +19,7 @@ namespace Bag_E_Commerce.Controllers
 
         // GET: api/ShoppingCart/{userId}
         [HttpGet("{userId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetUserCart(int userId)
         {
             var cartItems = await _shoppingCartService.GetUserCartAsync(userId);
@@ -32,6 +32,7 @@ namespace Bag_E_Commerce.Controllers
 
         // POST: api/ShoppingCart
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> AddToCart([FromBody] ShoppingCartModel shoppingCart)
         {
             if (shoppingCart == null)
@@ -45,6 +46,7 @@ namespace Bag_E_Commerce.Controllers
 
         // PUT: api/ShoppingCart
         [HttpPut]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> UpdateCart([FromBody] ShoppingCartModel shoppingCart)
         {
             if (shoppingCart == null)
@@ -63,6 +65,7 @@ namespace Bag_E_Commerce.Controllers
 
         // DELETE: api/ShoppingCart/{userId}/{productId}
         [HttpDelete("{userId}/{productId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> RemoveFromCart(int userId, int productId)
         {
             var isRemoved = await _shoppingCartService.RemoveFromCartAsync(userId, productId);
@@ -76,6 +79,7 @@ namespace Bag_E_Commerce.Controllers
 
         // GET: api/ShoppingCart/Total/{userId}
         [HttpGet("Total/{userId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetTotalPrice(int userId)
         {
             var totalPrice = await _shoppingCartService.GetTotalPriceAsync(userId);

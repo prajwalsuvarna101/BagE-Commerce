@@ -1,6 +1,7 @@
 ﻿using Bag_E_Commerce.Models;
 using Bag_E_Commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -14,6 +15,7 @@ public class VendorsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> GetAllVendors()
     {
         var vendors = await _vendorService.GetAllVendorsAsync();
@@ -21,6 +23,7 @@ public class VendorsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> GetVendorById(int id)
     {
         var vendor = await _vendorService.GetVendorByIdAsync(id);
@@ -32,6 +35,7 @@ public class VendorsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateVendor([FromBody] VendorModel vendor)
     {
         if (!ModelState.IsValid)
@@ -44,6 +48,7 @@ public class VendorsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateVendor(int id, [FromBody] VendorModel vendor)
     {
         if (!ModelState.IsValid)
@@ -61,6 +66,7 @@ public class VendorsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteVendor(int id)
     {
         var success = await _vendorService.DeleteVendorAsync(id);

@@ -3,6 +3,7 @@ using Bag_E_Commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -21,6 +22,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get all orders
         [HttpGet]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<IEnumerable<OrderModel>>> GetAllOrders()
         {
             var orders = await _orderService.GetAllOrdersAsync();
@@ -29,6 +31,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get order by ID
         [HttpGet("{orderId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<OrderModel>> GetOrderById(int orderId)
         {
             var order = await _orderService.GetOrderByIdAsync(orderId);
@@ -41,6 +44,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get orders by user ID
         [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<IEnumerable<OrderModel>>> GetOrdersByUserId(int userId)
         {
             var orders = await _orderService.GetOrdersByUserIdAsync(userId);
@@ -49,6 +53,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Create a new order
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<OrderModel>> CreateOrder([FromBody] OrderModel order)
         {
             var createdOrder = await _orderService.CreateOrderAsync(order);
@@ -57,6 +62,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Update an existing order
         [HttpPut("{orderId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<OrderModel>> UpdateOrder(int orderId, [FromBody] OrderModel order)
         {
             if (orderId != order.OrderId)
@@ -75,6 +81,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Delete an order
         [HttpDelete("{orderId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
             var success = await _orderService.DeleteOrderAsync(orderId);
@@ -87,6 +94,7 @@ namespace Bag_E_Commerce.Controllers
         }
 
         [HttpPost("checkout")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Checkout(int cartId)
         {
             try
@@ -101,6 +109,7 @@ namespace Bag_E_Commerce.Controllers
         }
 
         [HttpPost("{orderId}/complete-payment")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> CompletePayment(int orderId, [FromBody] PaymentRequest request)
         {
             try

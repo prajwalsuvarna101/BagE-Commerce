@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bag_E_Commerce.Models;
 using Bag_E_Commerce.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -20,6 +21,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Create a review
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> CreateReview([FromBody] ReviewModel review)
         {
             if (review == null)
@@ -33,6 +35,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get all reviews for a product
         [HttpGet("product/{productId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<List<ReviewModel>>> GetReviewsByProduct(int productId)
         {
             var reviews = await _reviewService.GetReviewsByProductAsync(productId);
@@ -46,6 +49,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get a specific review by its ID
         [HttpGet("{reviewId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<ReviewModel>> GetReviewById(int reviewId)
         {
             var review = await _reviewService.GetReviewByIdAsync(reviewId);
@@ -59,6 +63,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Update a review
         [HttpPut("{reviewId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> UpdateReview(int reviewId, [FromBody] ReviewModel updatedReview)
         {
             if (updatedReview == null)
@@ -77,6 +82,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get all reviews (new method to display all reviews)
         [HttpGet]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<List<ReviewModel>>> GetAllReviews()
         {
             var reviews = await _reviewService.GetAllReviewsAsync();
@@ -90,6 +96,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Delete a review
         [HttpDelete("{reviewId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteReview(int reviewId)
         {
             var result = await _reviewService.DeleteReviewAsync(reviewId);

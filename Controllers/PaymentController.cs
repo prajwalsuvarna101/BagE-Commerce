@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Bag_E_Commerce.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -16,6 +17,7 @@ namespace Bag_E_Commerce.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetAllPayments()
         {
             try
@@ -31,6 +33,7 @@ namespace Bag_E_Commerce.Controllers
         }
 
         [HttpGet("order/{orderId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetPaymentsByOrderId(int orderId)
         {
             try

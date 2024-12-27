@@ -1,8 +1,7 @@
 using Bag_E_Commerce.Models;
 using Bag_E_Commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -19,6 +18,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get all shipping records
         [HttpGet]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<IEnumerable<ShippingModel>>> GetAllShipping()
         {
             var shippingRecords = await _shippingService.GetAllShippingAsync();
@@ -27,6 +27,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Get shipping info by order ID
         [HttpGet("{orderId}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<ShippingModel>> GetShippingByOrderId(int orderId)
         {
             var shipping = await _shippingService.GetShippingByOrderIdAsync(orderId);
@@ -41,6 +42,7 @@ namespace Bag_E_Commerce.Controllers
 
         // Update shipping status by order ID
         [HttpPut("{orderId}/status")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ShippingModel>> UpdateShippingStatus(int orderId, [FromBody] ShippingStatus status)
         {
             var updatedShipping = await _shippingService.UpdateShippingStatusAsync(orderId, status);

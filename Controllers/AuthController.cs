@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Bag_E_Commerce.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -16,6 +17,7 @@ namespace Bag_E_Commerce.Controllers
         }
 
         [HttpPost("login")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var token = await _authService.Authenticate(request.Username, request.Password);
@@ -25,11 +27,5 @@ namespace Bag_E_Commerce.Controllers
 
             return Ok(new { Token = token });
         }
-    }
-
-    public class LoginRequest
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
     }
 }

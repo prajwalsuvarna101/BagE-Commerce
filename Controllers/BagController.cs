@@ -1,4 +1,4 @@
-﻿using Bag_E_Commerce.Models;
+﻿using Microsoft.AspNetCore.Authorization;
 using Bag_E_Commerce.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -20,6 +20,7 @@ namespace Bag_E_Commerce.Controllers
 
         // GET: api/Bag
         [HttpGet]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<IEnumerable<object>>> GetBags()
         {
             var bags = await _bagService.GetAllBagsAsync();
@@ -34,6 +35,7 @@ namespace Bag_E_Commerce.Controllers
 
         // GET: api/Bag/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<object>> GetBag(int id)
         {
             var bag = await _bagService.GetBagByIdAsync(id);
@@ -48,6 +50,7 @@ namespace Bag_E_Commerce.Controllers
 
         // POST: api/Bag
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<BagModel>> PostBag(BagModel bag)
         {
             var createdBag = await _bagService.CreateBagAsync(bag);
@@ -56,6 +59,7 @@ namespace Bag_E_Commerce.Controllers
 
         // PUT: api/Bag/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutBag(int id, BagModel bag)
         {
             var updatedBag = await _bagService.UpdateBagAsync(id, bag);
@@ -69,6 +73,7 @@ namespace Bag_E_Commerce.Controllers
 
         // DELETE: api/Bag/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBag(int id)
         {
             var result = await _bagService.DeleteBagAsync(id);
