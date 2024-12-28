@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Bag_E_Commerce.Data;
 using Bag_E_Commerce.Models;
 using System.Security.Cryptography;
 using System.Text;
+using System.Security.Claims;
+
 
 namespace Bag_E_Commerce.Controllers
 {

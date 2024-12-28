@@ -3,12 +3,18 @@
 namespace Bag_E_Commerce.Services.Interfaces
 {
     public interface IBagService
-    {
+    {    
         // Returns a collection of bags with populated Category and Vendor data
         Task<IEnumerable<object>> GetAllBagsAsync();
 
         // Returns a single bag with populated Category and Vendor data
         Task<object?> GetBagByIdAsync(int id);
+
+        //Get the Bags related to a specific Category
+        Task<IEnumerable<BagModel>> GetBagsByCategoryIdAsync(int categoryId);
+        
+        //Get the Bags related to a specific Vendor
+        Task<IEnumerable<BagModel>> GetBagsByVendorIdAsync(int vendorId);
 
         // Creates a new bag and returns the created bag with its details
         Task<BagModel> CreateBagAsync(BagModel bag);

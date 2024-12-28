@@ -16,6 +16,26 @@ namespace Bag_E_Commerce.Services
         {
             _context = context;
         }
+        
+        // Get Bags by Vendor
+        public async Task<IEnumerable<BagModel>> GetBagsByVendorIdAsync(int vendorId)
+        {
+            // Query the database to get bags related to the vendor
+            var bags = await _context.Bags
+                .Where(b => b.VendorId == vendorId)
+                .ToListAsync();
+            return bags;
+        }
+
+        // Get Bags by Category
+        public async Task<IEnumerable<BagModel>> GetBagsByCategoryIdAsync(int CategoryId)
+        {
+            // Query the database to get bags related to the vendor
+            var bags = await _context.Bags
+                .Where(b => b.CategoryId == CategoryId)
+                .ToListAsync();
+            return bags;
+        }
 
         // Get all bags with related Category and Vendor information
         public async Task<IEnumerable<object>> GetAllBagsAsync()
