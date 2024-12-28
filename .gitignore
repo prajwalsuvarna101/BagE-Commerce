@@ -58,6 +58,9 @@ publish/
 *.publishproj
 PublishScripts/
 
+#Migrations
+Migrations/*
+
 # Miscellaneous files
 *.pidb
 *.pdb
