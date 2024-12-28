@@ -20,6 +20,7 @@ namespace Bag_E_Commerce.Controllers
 
         // GET: api/User
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserModel>>> GetUsers()
         {
             return await _context.Users.ToListAsync();
@@ -27,8 +28,13 @@ namespace Bag_E_Commerce.Controllers
 
         // GET: api/User/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<UserModel>> GetUser(int id)
         {
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if(currentUserId!=id){
+                return Unauthorized();
+            }
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -41,6 +47,7 @@ namespace Bag_E_Commerce.Controllers
 
         // POST: api/User
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserModel>> PostUser([FromForm] string name, [FromForm] string email, [FromForm] string username, [FromForm] string password, [FromForm] int role)
         {
             var user = new UserModel
@@ -60,6 +67,7 @@ namespace Bag_E_Commerce.Controllers
 
         // PUT: api/User/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutUser(int id, [FromForm] string name, [FromForm] string email, [FromForm] string username, [FromForm] string password)
         {
             var user = await _context.Users.FindAsync(id);
@@ -100,6 +108,7 @@ namespace Bag_E_Commerce.Controllers
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);

@@ -20,12 +20,25 @@ namespace Bag_E_Commerce.Controllers
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var token = await _authService.Authenticate(request.Username, request.Password);
+            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest(new { Message = "Username and password must be provided." });
+            }
 
-            if (token == null)
-                return Unauthorized("Invalid username or password");
+            try
+            {
+                var token = await _authService.Authenticate(request.Username, request.Password);
 
-            return Ok(new { Token = token });
+                if (token == null)
+                    return Unauthorized(new { Message = "Invalid username or password." });
+
+                return Ok(new { Token = token });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred.", Details = ex.Message });
+            }
         }
+
     }
 }

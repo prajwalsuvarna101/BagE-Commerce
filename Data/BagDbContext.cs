@@ -8,16 +8,16 @@ namespace Bag_E_Commerce.Data
     {
         public BagDbContext(DbContextOptions<BagDbContext> options) : base(options) { }
 
-        public DbSet<UserModel> Users { get; set; }
-        public DbSet<BagModel> Bags { get; set; }
-        public DbSet<CategoryModel> Categories { get; set; }
-        public DbSet<VendorModel> Vendors { get; set; }
-        public DbSet<ReviewModel> Reviews { get; set; }
-        public DbSet<ShoppingCartModel> Carts { get; set; }
-        public DbSet<OrderModel> Orders { get; set; }
-        public DbSet<OrderDetailsModel> OrderDetails { get; set; }
-        public DbSet<PaymentModel> Payment { get; set; }
-        public DbSet<ShippingModel> Shipping {get;set;}
+        public required DbSet<UserModel> Users { get; set; }
+        public required DbSet<BagModel> Bags { get; set; }
+        public required DbSet<CategoryModel> Categories { get; set; }
+        public required DbSet<VendorModel> Vendors { get; set; }
+        public required DbSet<ReviewModel> Reviews { get; set; }
+        public required DbSet<ShoppingCartModel> Carts { get; set; }
+        public required DbSet<OrderModel> Orders { get; set; }
+        public required DbSet<OrderDetailsModel> OrderDetails { get; set; }
+        public required DbSet<PaymentModel> Payment { get; set; }
+        public required DbSet<ShippingModel> Shipping { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,7 +52,7 @@ namespace Bag_E_Commerce.Data
             modelBuilder.Entity<ShoppingCartModel>()
             .HasKey(cart => new { cart.CartId, cart.ProductId });
 
-            
+
 
             modelBuilder.Entity<ShoppingCartModel>()
                 .HasOne<BagModel>()

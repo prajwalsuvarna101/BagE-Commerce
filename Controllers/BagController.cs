@@ -33,7 +33,7 @@ namespace Bag_E_Commerce.Controllers
             return Ok(bags); // Return the bags with populated Category and Vendor data
         }
 
-        // GET: api/Bag/5
+        // GET: api/Bag/id
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<object>> GetBag(int id)
@@ -47,6 +47,36 @@ namespace Bag_E_Commerce.Controllers
 
             return Ok(bag); // Return the single bag with populated Category and Vendor data
         }
+        // GET: api/Bag/category/{categoryId}
+        [HttpGet("category/{categoryId}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<object>>> GetBagsByCategory(int categoryId)
+        {
+            // Fetch the bags that belong to the specified category
+            var bags = await _bagService.GetBagsByCategoryIdAsync(categoryId);
+
+            if (bags == null || !bags.Any())
+            {
+                return NotFound(new { message = "No bags found for the specified category." });
+            }
+
+            return Ok(bags);
+        }
+
+        // GET: api/Bag/vendor/{vendorId}
+        [HttpGet("vendor/{VendorId}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<ActionResult<IEnumerable<object>>> GetBagsByVendor(int VendorId)
+        {
+            // Fetch the bags that belong to the specified category
+            var bags = await _bagService.GetBagsByCategoryIdAsync(VendorId);
+
+            if (bags == null || !bags.Any())
+            {
+                return NotFound(new { message = "No bags found for the specified Vendor." });
+            }
+            return Ok(bags);
+        }
 
         // POST: api/Bag
         [HttpPost]
@@ -57,7 +87,7 @@ namespace Bag_E_Commerce.Controllers
             return CreatedAtAction(nameof(GetBag), new { id = createdBag.Id }, createdBag);
         }
 
-        // PUT: api/Bag/5
+        // PUT: api/Bag/id
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutBag(int id, BagModel bag)
@@ -71,7 +101,7 @@ namespace Bag_E_Commerce.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Bag/5
+        // DELETE: api/Bag/id
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBag(int id)

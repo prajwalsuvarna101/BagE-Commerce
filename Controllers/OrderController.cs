@@ -120,7 +120,7 @@ namespace Bag_E_Commerce.Controllers
                 var shipping = new ShippingModel
                 {
                     OrderId = orderId,
-                    ShippingAddress = request.ShippingAddress,  // Assuming this is part of the payment request
+                    ShippingAddress = request.ShippingAddress==null?"HOME":request.ShippingAddress,  // Assuming this is part of the payment request
                     ShippingStatus = ShippingStatus.Pending
                 };
 
