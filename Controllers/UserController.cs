@@ -29,7 +29,7 @@ namespace Bag_E_Commerce.Controllers
             return Ok(users);
         }
 
-        // GET: api/User/5
+        // GET: api/User/{id}
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<UserModel>> GetUser(int id)
@@ -66,7 +66,7 @@ namespace Bag_E_Commerce.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.id }, user);
         }
 
-        // PUT: api/User/5
+        // PUT: api/User/{id}
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutUser(int id, [FromForm] string name, [FromForm] string email, [FromForm] string username, [FromForm] string password)
@@ -80,7 +80,7 @@ namespace Bag_E_Commerce.Controllers
             return NoContent();
         }
 
-        // DELETE: api/User/5
+        // DELETE: api/User/{id}
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int id)

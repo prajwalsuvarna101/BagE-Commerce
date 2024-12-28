@@ -77,6 +77,19 @@ namespace Bag_E_Commerce.Controllers
             return NoContent(); // Return 204 No Content if deletion was successful
         }
 
+        //DELETE: api/ShoppingCart/{cartId}
+        [HttpDelete("{cartId}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> RemoveItemsFromCartAsync(int cartId){
+            
+            var isRemoved = await _shoppingCartService.RemoveItemsFromCartAsync(cartId);
+            if(!isRemoved){
+                return  NotFound("Items removed from cart successfully.");
+
+            }
+            return Ok("Deletion Successfull!");
+        }
+
         // GET: api/ShoppingCart/Total/{userId}
         [HttpGet("Total/{userId}")]
         [Authorize(Roles = "Admin,User")]

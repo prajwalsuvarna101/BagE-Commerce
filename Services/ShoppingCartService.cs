@@ -75,6 +75,19 @@ namespace Bag_E_Commerce.Services
             return false;
         }
 
+        public async Task<bool> RemoveItemsFromCartAsync(int cartId)
+        {
+            var cartItems = await _context.Carts.Where(cart => cart.CartId == cartId).ToListAsync();;
+
+            if (cartItems.Any())
+            {
+                _context.Carts.RemoveRange(cartItems);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
         public async Task<decimal> GetTotalPriceAsync(int userId)
         {
             return await _context.Carts
