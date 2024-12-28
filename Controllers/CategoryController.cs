@@ -18,6 +18,7 @@ namespace Bag_E_Commerce.Controllers
             _categoryService = categoryService;
         }
 
+        // GET: api/Category
         [HttpGet]
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetAllCategories()
@@ -26,6 +27,7 @@ namespace Bag_E_Commerce.Controllers
             return Ok(categories);
         }
 
+        // GET: api/Category/{id}
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetCategoryById(int id)
@@ -36,6 +38,7 @@ namespace Bag_E_Commerce.Controllers
             return Ok(category);
         }
 
+        // POST: api/Category
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryModel category)
@@ -47,6 +50,7 @@ namespace Bag_E_Commerce.Controllers
             return CreatedAtAction(nameof(GetCategoryById), new { id = category.CategoryId }, category);
         }
 
+        // PUT: api/Category/{id}
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryModel category)
@@ -61,6 +65,7 @@ namespace Bag_E_Commerce.Controllers
             return NoContent();
         }
 
+        // DELETE: api/Category/{id}
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int id)

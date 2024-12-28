@@ -47,6 +47,7 @@ namespace Bag_E_Commerce.Controllers
 
             return Ok(bag); // Return the single bag with populated Category and Vendor data
         }
+        
         // GET: api/Bag/category/{categoryId}
         [HttpGet("category/{categoryId}")]
         [Authorize(Roles = "Admin,User")]
