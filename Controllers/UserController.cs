@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using Bag_E_Commerce.Data;
 using Bag_E_Commerce.Models;
-using System.Security.Cryptography;
-using System.Text;
+using Bag_E_Commerce.Services.Interfaces;
+using System.Collections.Generic;
 using System.Security.Claims;
-
+using System.Threading.Tasks;
 
 namespace Bag_E_Commerce.Controllers
 {
@@ -14,11 +12,12 @@ namespace Bag_E_Commerce.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly BagDbContext _context;
+        private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public UserController(BagDbContext context)
+        public UserController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         // GET: api/User
@@ -26,7 +25,8 @@ namespace Bag_E_Commerce.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<UserModel>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
         }
 
         // GET: api/User/5
@@ -35,36 +35,34 @@ namespace Bag_E_Commerce.Controllers
         public async Task<ActionResult<UserModel>> GetUser(int id)
         {
             var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            if(currentUserId!=id){
+            if (currentUserId != id)
+            {
                 return Unauthorized();
             }
-            var user = await _context.Users.FindAsync(id);
 
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return Ok(user);
         }
 
         // POST: api/User
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<UserModel>> PostUser([FromForm] string name, [FromForm] string email, [FromForm] string username, [FromForm] string password, [FromForm] int role)
-        {
-            var user = new UserModel
-            {
-                name = name,
-                email = email,
-                username = username,
-                password_hash = HashPassword(password), // Hash the password before saving it
-                role = (Enums.UserRole)role
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
+        public async Task<ActionResult<UserModel>> PostUser([FromForm] string Name, [FromForm] string Email, [FromForm] string Username, [FromForm] string Password, [FromForm] int Role)
+        {   
+            var newUser = new UserModel
+                {
+                    name = Name,
+                    email = Email,
+                    username = Username,
+                    password_hash = _authService.HashPassword(Password),
+                    role = (Enums.UserRole)Role
+                };
+            var user = await _userService.CreateUserAsync(newUser);
             return CreatedAtAction(nameof(GetUser), new { id = user.id }, user);
         }
 
@@ -73,37 +71,10 @@ namespace Bag_E_Commerce.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutUser(int id, [FromForm] string name, [FromForm] string email, [FromForm] string username, [FromForm] string password)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var updated = await _userService.UpdateUserAsync(id, name, email, username, password);
+            if (!updated)
             {
                 return NotFound();
-            }
-
-            user.name = name;
-            user.email = email;
-            user.username = username;
-
-            if (!string.IsNullOrEmpty(password))
-            {
-                user.password_hash = HashPassword(password); // Hash the password if it's being updated
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
             }
 
             return NoContent();
@@ -114,32 +85,13 @@ namespace Bag_E_Commerce.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var deleted = await _userService.DeleteUserAsync(id);
+            if (!deleted)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.id == id);
-        }
-
-        // Method to hash the password using SHA-256
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                byte[] hashBytes = sha256.ComputeHash(passwordBytes);
-                return Convert.ToBase64String(hashBytes); // Return the Base64-encoded hash
-            }
         }
     }
 }
