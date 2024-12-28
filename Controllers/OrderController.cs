@@ -1,5 +1,6 @@
 ﻿using Bag_E_Commerce.Models;
 using Bag_E_Commerce.Services.Interfaces;
+using Bag_E_Commerce.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Bag_E_Commerce.Controllers
         private readonly IOrderService _orderService;
         private readonly IShippingService _shippingService;
 
-        public OrderController(IOrderService orderService,IShippingService shippingService)
+        public OrderController(IOrderService orderService, IShippingService shippingService)
         {
             _orderService = orderService;
             _shippingService = shippingService;
@@ -60,23 +61,43 @@ namespace Bag_E_Commerce.Controllers
             return CreatedAtAction(nameof(GetOrderById), new { orderId = createdOrder.OrderId }, createdOrder);
         }
 
-        // Update an existing order
-        [HttpPut("{orderId}")]
+        // Cancel order
+        [HttpPut("/Order/cancel/{orderId}")]
         [Authorize(Roles = "Admin,User")]
-        public async Task<ActionResult<OrderModel>> UpdateOrder(int orderId, [FromBody] OrderModel order)
+        public async Task<ActionResult<OrderModel>> UpdateOrder(int orderId, OrderStatus orderStatus)
         {
-            if (orderId != order.OrderId)
+            var existingOrder = await _orderService.GetOrderByIdAsync(orderId);
+
+            if (existingOrder == null)
             {
-                return BadRequest();
+                return NotFound("Order not found.");
             }
 
-            var updatedOrder = await _orderService.UpdateOrderAsync(order);
+            if (existingOrder.OrderStatus == OrderStatus.Cancelled)
+            {
+                return BadRequest("Order has already been canceled and cannot be modified.");
+            }
+            if (orderStatus != OrderStatus.Cancelled)
+            {
+                return BadRequest("Users can only cancel the order.");
+            }
+
+            if (orderStatus == OrderStatus.Cancelled)
+            {
+                existingOrder.OrderStatus = OrderStatus.Cancelled;
+            }
+            else
+            {
+                return BadRequest("Invalid status change.");
+            }
+
+            var updatedOrder = await _orderService.UpdateOrderAsync(existingOrder);
             if (updatedOrder == null)
             {
-                return NotFound();
+                return NotFound("Failed to update the order.");
             }
 
-            return Ok(updatedOrder);
+            return Ok(existingOrder);
         }
 
         // Delete an order
@@ -120,7 +141,7 @@ namespace Bag_E_Commerce.Controllers
                 var shipping = new ShippingModel
                 {
                     OrderId = orderId,
-                    ShippingAddress = request.ShippingAddress==null?"HOME":request.ShippingAddress,  // Assuming this is part of the payment request
+                    ShippingAddress = request.ShippingAddress == null ? "HOME" : request.ShippingAddress,  // Assuming this is part of the payment request
                     ShippingStatus = ShippingStatus.Pending
                 };
 
@@ -142,5 +163,5 @@ namespace Bag_E_Commerce.Controllers
             }
         }
 
-}
+    }
 }
